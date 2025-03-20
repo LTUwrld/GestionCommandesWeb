@@ -1,0 +1,97 @@
+﻿@model GestionCommandesWeb.Shared.PaginatedList<GestionCommandesWeb.Models.Orders>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div style="display: flex; justify-content: space-between">
+    <h1>Liste des Commandes</h1>
+    <h1>
+        @Html.DisplayFor(model => model.TotalItems)
+    </h1>
+</div>
+
+<p>
+    <a asp-action="Create">Creer Commande</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <label>Filtre: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" /></label>
+            <input type="submit" placeholder="Rechercher par Numero Commande ou Numero Client" value="Rechercher" class="btn btn-default" /> |
+            <a asp-action="Index">Revenir a la liste</a>
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Numero Commande
+            </th>
+            <th>
+                Date Commande
+            </th>
+            <th>
+                Numero Client
+            </th>
+            <th>
+                Nom Entreprise
+            </th>
+            <th>
+                Nom Client
+            </th>
+            <th>
+                Telephone
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customers.CustomerID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customers.CompanyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customers.ContactName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customers.Phone)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.OrderID">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.OrderID">Modifier</a> |
+                <a asp-action="Delete" asp-route-id="@item.OrderID">Supprimer</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Precedent
+</a>
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Suivant
+</a>

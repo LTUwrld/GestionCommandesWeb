@@ -1,0 +1,94 @@
+﻿@model GestionCommandesWeb.Shared.PersistOrdersViewModel
+
+@{
+    ViewData["Title"] = "Modifier Une Commande";
+}
+
+<h1>Modification</h1>
+
+<h4>Commande</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Orders.OrderDate" class="control-label">Date Commande</label>
+                <input disabled="true" asp-for="Orders.OrderDate" class="form-control" />
+                <span asp-validation-for="Orders.OrderDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Orders.CustomerID" class="control-label">Client</label>
+                <select asp-for="Orders.CustomerID" class="form-control" asp-items="ViewBag.CustomerID"></select>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input type="submit" value="Modifier" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form asp-controller="Orders" asp-action="CreateOrderDetail">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Order_Detail.ProductID" class="control-label">Nom Produit</label>
+                <select asp-for="Order_Detail.ProductID" class="form-control" asp-items="ViewBag.ProductID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order_Detail.Quantity" class="control-label">Quantite</label>
+                <input type="number" asp-for="Order_Detail.Quantity" class="form-control" />
+                <span asp-validation-for="Order_Detail.Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order_Detail.UnitPrice" class="control-label">Prix Unitaire</label>
+                <input asp-for="Order_Detail.UnitPrice" class="form-control" />
+                <span asp-validation-for="Order_Detail.UnitPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input type="submit" value="Enregistrer Ligne Produit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nom Produit
+            </th>
+            <th>
+                Quantite
+            </th>
+            <th>
+                Prix Unitaire
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders.Order_Details)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Products.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    <a asp-action="EditOrderDetail" asp-route-id="@item.ProductID">Modifier</a> |
+                    <a asp-action="DeleteOrderDetail" asp-route-id="@item.ProductID">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Retour a la liste</a>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

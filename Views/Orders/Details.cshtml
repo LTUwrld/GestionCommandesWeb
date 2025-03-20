@@ -1,0 +1,105 @@
+﻿@model GestionCommandesWeb.Models.Orders
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Orders</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Numero Commande
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.OrderID)
+                </dd>
+                <dt class = "col-sm-4">
+                    Date Commande
+                </dt>
+                <dd class = "col-sm-8">
+                    @Html.DisplayFor(model => model.OrderDate)
+                </dd>
+                <dt class = "col-sm-4">
+                    Numero Client
+                </dt>
+                <dd class = "col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.CustomerID)
+                </dd>
+                <dt class="col-sm-4">
+                    Nom Client
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.ContactName)
+                </dd>
+                <dt class="col-sm-4">
+                    Telephone Client
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.Phone)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Nom Entrprise
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.CompanyName)
+                </dd>
+                <dt class="col-sm-4">
+                    Nom Client
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.ContactName)
+                </dd>
+                <dt class="col-sm-4">
+                    Phone Client
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Customers.Phone)
+                </dd>
+        </div>
+    </div> 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nom Produit
+                </th>
+                <th>
+                    Quantite
+                </th>
+                <th>
+                    Prix Unitaire
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Order_Details)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Products.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UnitPrice)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.OrderID">Modifier</a> |
+    <a asp-action="Index">Retour a la liste</a>
+</div>
