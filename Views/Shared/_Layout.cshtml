@@ -4,50 +4,356 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GestionCommandes</title>
-    <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GestionCommandesWeb.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <style>
+        :root {
+            --sidebar-width: 200px;
+            --topbar-height: 60px;
+            --footer-height: 60px;
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --text-color: #858796;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fc;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(180deg, var(--primary-color) 10%, #224abe 100%);
+            color: white;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            padding: 1.5rem 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        #topbar {
+            height: var(--topbar-height);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            background: white;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .topbar-divider {
+            width: 0;
+            border-right: 1px solid #e3e6f0;
+            height: calc(var(--topbar-height) - 2rem);
+            margin: auto 1rem;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        #content-wrapper {
+            margin-left: var(--sidebar-width);
+            padding-top: var(--topbar-height);
+            min-height: 100vh;
+            background-color: #f8f9fc;
+            transition: all 0.3s;
+        }
+
+        .container-fluid {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.35rem;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-left: var(--sidebar-width);
+            background-color: white;
+            padding: 0 2.5rem;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        @@media (max-width: 768px) {
+            #sidebar {
+                margin-left: -var(--sidebar-width);
+            }
+
+            #topbar {
+                left: 0;
+            }
+
+            #content-wrapper, .footer {
+                margin-left: 0;
+            }
+
+            body.sidebar-toggled #sidebar {
+                margin-left: 0;
+            }
+
+            body.sidebar-toggled #topbar {
+                left: var(--sidebar-width);
+            }
+
+            body.sidebar-toggled #content-wrapper,
+            body.sidebar-toggled .footer {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        #sidebarToggle {
+            cursor: pointer;
+            margin-right: 1rem;
+            color: #d1d3e2;
+        }
+
+        #sidebarToggle:hover {
+            color: #b7b9cc;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Orders" asp-action="Index">Gestion Commandes</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Commandes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div id="sidebar">
+        <div class="sidebar-brand">
+            <span>CommandsApp</span>
+        </div>
+        <hr class="sidebar-divider my-0">
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-fw fa-home"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Orders" asp-action="Index">
+                    <i class="fas fa-fw fa-shopping-cart"></i>
+                    <span>Commandes</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Privacy">
+                    <i class="fas fa-fw fa-lock"></i>
+                    <span>Confidentialité</span>
+                </a>
+            </li>
+        </ul>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Gestion Commandes - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <nav id="topbar">
+        <div id="sidebarToggle">
+            <i class="fas fa-bars fa-lg"></i>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center w-100">
+                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-light border-0 small" placeholder="Rechercher..." aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                            <div class="topbar-user">
+                                <div class="user-avatar">AD</div>
+                                <span class="d-none d-lg-inline text-gray-600 small">Admin</span>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profile
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Paramètres
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Déconnexion
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+        </div>
+    </nav>
+
+
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+                @RenderSection("ActionButtons", required: false)
+            </div>
+
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">&copy; 2025 - Gestion Commandes</div>
+                <div>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Confidentialité</a>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Prêt à partir?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à terminer votre session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-primary" href="#">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.body.classList.toggle('sidebar-toggled');
+
+            // For mobile view
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const contentWrapper = document.getElementById('content-wrapper');
+                const topbar = document.getElementById('topbar');
+                const footer = document.querySelector('.footer');
+
+                if (document.body.classList.contains('sidebar-toggled')) {
+                    sidebar.style.marginLeft = '0';
+                    topbar.style.left = 'var(--sidebar-width)';
+                    contentWrapper.style.marginLeft = 'var(--sidebar-width)';
+                    footer.style.marginLeft = 'var(--sidebar-width)';
+                } else {
+                    sidebar.style.marginLeft = 'calc(-1 * var(--sidebar-width))';
+                    topbar.style.left = '0';
+                    contentWrapper.style.marginLeft = '0';
+                    footer.style.marginLeft = '0';
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                // Reset styles for desktop view
+                const sidebar = document.getElementById('sidebar');
+                const contentWrapper = document.getElementById('content-wrapper');
+                const topbar = document.getElementById('topbar');
+                const footer = document.querySelector('.footer');
+
+                sidebar.style.marginLeft = '0';
+                topbar.style.left = 'var(--sidebar-width)';
+                contentWrapper.style.marginLeft = 'var(--sidebar-width)';
+                footer.style.marginLeft = 'var(--sidebar-width)';
+                document.body.classList.remove('sidebar-toggled');
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

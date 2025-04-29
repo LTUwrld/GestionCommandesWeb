@@ -11,7 +11,7 @@ namespace GestionCommandesWeb.Shared
 
         public PersistOrdersViewModel()
         {
-            Orders = new Orders{ OrderDate = DateTime.Now, CustomerID = ""};
+            Orders = new Orders{ OrderDate = DateTime.Now, CustomerID = "", RequiredDate = null, ShipAddress = "", ShipCity = "", ShipCountry = "", ShipName = "", ShippedDate = null, ShipPostalCode = "", ShipRegion = "", ShipVia = null, Freight = 0, };
             Order_Detail = new Order_Details();
             Update_Order_Detail = new Order_Details();
         }

@@ -1,94 +1,273 @@
 ﻿@model GestionCommandesWeb.Shared.PersistOrdersViewModel
 
 @{
-    ViewData["Title"] = "Modifier Une Commande";
+    ViewData["Title"] = "Modifier la Commande";
 }
 
-<h1>Modification</h1>
-
-<h4>Commande</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Orders.OrderDate" class="control-label">Date Commande</label>
-                <input disabled="true" asp-for="Orders.OrderDate" class="form-control" />
-                <span asp-validation-for="Orders.OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Orders.CustomerID" class="control-label">Client</label>
-                <select asp-for="Orders.CustomerID" class="form-control" asp-items="ViewBag.CustomerID"></select>
-            </div>
-            <div class="form-group" style="margin-top: 10px">
-                <input type="submit" value="Modifier" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Modification de la Commande #@Model.Orders.OrderID</h6>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
     </div>
-    <div class="col-md-6">
-        <form asp-controller="Orders" asp-action="CreateOrderDetail">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Order_Detail.ProductID" class="control-label">Nom Produit</label>
-                <select asp-for="Order_Detail.ProductID" class="form-control" asp-items="ViewBag.ProductID"></select>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <form asp-action="Edit" class="needs-validation" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input type="hidden" asp-for="Orders.OrderID" />
+
+                    <div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <h5 class="border-bottom pb-2 mb-3">Informations Client</h5>
+                            <div class="form-group">
+                                <label asp-for="Orders.CustomerID" class="control-label">Client *</label>
+                                <select asp-for="Orders.CustomerID" class="form-control select2" asp-items="ViewBag.CustomerID" required>
+                                    <option value="">-- Sélectionner un client --</option>
+                                </select>
+                                <span asp-validation-for="Orders.CustomerID" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <h5 class="border-bottom pb-2 mb-3">Informations Commande</h5>
+                            <div class="form-group">
+                                <label asp-for="Orders.OrderDate" class="control-label">Date Commande</label>
+                                <input type="date" asp-for="Orders.OrderDate" class="form-control" disabled />
+                                <span asp-validation-for="Orders.OrderDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.RequiredDate" class="control-label">Date Requise</label>
+                                <input type="date" asp-for="Orders.RequiredDate" class="form-control" />
+                                <span asp-validation-for="Orders.RequiredDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShippedDate" class="control-label">Date Expédition</label>
+                                <input type="date" asp-for="Orders.ShippedDate" class="form-control" />
+                                <span asp-validation-for="Orders.ShippedDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <h5 class="border-bottom pb-2 mb-3">Informations Expédition</h5>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipVia" class="control-label">Transporteur</label>
+                                <select asp-for="Orders.ShipVia" class="form-control" asp-items="ViewBag.Shippers">
+                                    <option value="">-- Sélectionner un transporteur --</option>
+                                </select>
+                                <span asp-validation-for="Orders.ShipVia" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.Freight" class="control-label">Frais de Port</label>
+                                <input asp-for="Orders.Freight" class="form-control" type="number" step="0.01" />
+                                <span asp-validation-for="Orders.Freight" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipName" class="control-label">Nom Destinataire</label>
+                                <input asp-for="Orders.ShipName" class="form-control" />
+                                <span asp-validation-for="Orders.ShipName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipAddress" class="control-label">Adresse</label>
+                                <input asp-for="Orders.ShipAddress" class="form-control" />
+                                <span asp-validation-for="Orders.ShipAddress" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipCity" class="control-label">Ville</label>
+                                <input asp-for="Orders.ShipCity" class="form-control" />
+                                <span asp-validation-for="Orders.ShipCity" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipRegion" class="control-label">Région</label>
+                                <input asp-for="Orders.ShipRegion" class="form-control" />
+                                <span asp-validation-for="Orders.ShipRegion" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipPostalCode" class="control-label">Code Postal</label>
+                                <input asp-for="Orders.ShipPostalCode" class="form-control" />
+                                <span asp-validation-for="Orders.ShipPostalCode" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Orders.ShipCountry" class="control-label">Pays</label>
+                                <input asp-for="Orders.ShipCountry" class="form-control" />
+                                <span asp-validation-for="Orders.ShipCountry" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Order_Detail.Quantity" class="control-label">Quantite</label>
-                <input type="number" asp-for="Order_Detail.Quantity" class="form-control" />
-                <span asp-validation-for="Order_Detail.Quantity" class="text-danger"></span>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Gestion des produits</h6>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="Orders" asp-action="CreateOrderDetail" class="needs-validation" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            <input type="hidden" name="OrderID" value="@Model.Orders.OrderID" />
+
+                            <div class="form-group">
+                                <label asp-for="Order_Detail.ProductID" class="control-label">Produit *</label>
+                                <select asp-for="Order_Detail.ProductID" class="form-control select2" asp-items="ViewBag.ProductID" required>
+                                    <option value="">-- Sélectionner un produit --</option>
+                                </select>
+                                <span asp-validation-for="Order_Detail.ProductID" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="Order_Detail.Quantity" class="control-label">Quantité *</label>
+                                    <input asp-for="Order_Detail.Quantity" class="form-control" type="number" min="1" required />
+                                    <span asp-validation-for="Order_Detail.Quantity" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="Order_Detail.UnitPrice" class="control-label">Prix Unitaire *</label>
+                                    <input asp-for="Order_Detail.UnitPrice" class="form-control" type="number" step="0.01" min="0" required />
+                                    <span asp-validation-for="Order_Detail.UnitPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Order_Detail.Discount" class="control-label">Remise (%)</label>
+                                <input asp-for="Order_Detail.Discount" class="form-control" type="number" step="0.01" min="0" max="1" />
+                                <span asp-validation-for="Order_Detail.Discount" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-plus-circle"></i> Ajouter le produit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Produits commandés</h6>
+                        <span class="badge badge-primary badge-pill">@Model.Orders.Order_Details.Count</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Qté</th>
+                                        <th>Prix Unitaire</th>
+                                        <th>Remise</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Orders.Order_Details)
+                                    {
+                                        <tr>
+                                            <td>@item.Products.ProductName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.UnitPrice.ToString("C")</td>
+                                            <td>@((item.Discount * 100).ToString("N1"))%</td>
+                                            <td>@((item.UnitPrice * item.Quantity * (1m - (decimal)item.Discount)).ToString("C"))</td>
+                                            <td class="text-center">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a asp-action="EditOrderDetail" asp-route-id="@item.ProductID" class="btn btn-warning" title="Modifier">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a asp-action="DeleteOrderDetail" asp-route-id="@item.ProductID" class="btn btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="font-weight-bold">
+                                        <td colspan="4">Total Produits</td>
+                                        <td>@Model.Orders.Order_Details.Sum(od => od.UnitPrice * od.Quantity * (1m - (decimal)od.Discount)).ToString("C")</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Order_Detail.UnitPrice" class="control-label">Prix Unitaire</label>
-                <input asp-for="Order_Detail.UnitPrice" class="form-control" />
-                <span asp-validation-for="Order_Detail.UnitPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group" style="margin-top: 10px">
-                <input type="submit" value="Enregistrer Ligne Produit" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Nom Produit
-            </th>
-            <th>
-                Quantite
-            </th>
-            <th>
-                Prix Unitaire
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Orders.Order_Details)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Products.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UnitPrice)
-                </td>
-                <td>
-                    <a asp-action="EditOrderDetail" asp-route-id="@item.ProductID">Modifier</a> |
-                    <a asp-action="DeleteOrderDetail" asp-route-id="@item.ProductID">Supprimer</a>
-                </td>
-            </tr>
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #d1d3e2;
         }
-    </tbody>
-</table>
 
-<div>
-    <a asp-action="Index">Retour a la liste</a>
-</div>
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .table-sm td, .table-sm th {
+            padding: 0.3rem;
+        }
+
+        .border-bottom {
+            border-bottom: 1px solid #e3e6f0 !important;
+        }
+    </style>
+}
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialiser Select2 pour les listes déroulantes
+            $('.select2').select2({
+                width: '100%',
+                placeholder: $(this).data('placeholder')
+            });
+
+            // Validation des formulaires
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByClassName('needs-validation');
+                    Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        });
+    </script>
 }

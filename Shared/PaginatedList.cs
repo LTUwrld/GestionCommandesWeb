@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionCommandesWeb.Shared
@@ -27,6 +28,7 @@ namespace GestionCommandesWeb.Shared
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
         {
             var count = await source.CountAsync();
+            Debug.Print("count  ======================== "+ count);
             var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }

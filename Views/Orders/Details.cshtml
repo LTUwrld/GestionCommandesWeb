@@ -1,105 +1,197 @@
 ﻿@model GestionCommandesWeb.Models.Orders
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Détails de la Commande";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Commande</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-4">
-                    Numero Commande
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.OrderID)
-                </dd>
-                <dt class = "col-sm-4">
-                    Date Commande
-                </dt>
-                <dd class = "col-sm-8">
-                    @Html.DisplayFor(model => model.OrderDate)
-                </dd>
-                <dt class = "col-sm-4">
-                    Numero Client
-                </dt>
-                <dd class = "col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.CustomerID)
-                </dd>
-                <dt class="col-sm-4">
-                    Nom Client
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.ContactName)
-                </dd>
-                <dt class="col-sm-4">
-                    Telephone Client
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.Phone)
-                </dd>
-            </dl>
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Détails de la Commande #@Model.OrderID</h6>
+        <div class="btn-group">
+            <a asp-action="Edit" asp-route-id="@Model.OrderID" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.OrderID" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash-alt"></i> Supprimer
+            </a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">
+                <i class="fas fa-list"></i> Retour à la liste
+            </a>
         </div>
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-4">
-                    Nom Entrprise
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.CompanyName)
-                </dd>
-                <dt class="col-sm-4">
-                    Nom Client
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.ContactName)
-                </dd>
-                <dt class="col-sm-4">
-                    Phone Client
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Customers.Phone)
-                </dd>
-        </div>
-    </div> 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Nom Produit
-                </th>
-                <th>
-                    Quantite
-                </th>
-                <th>
-                    Prix Unitaire
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Order_Details)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Products.ProductName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Quantity)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UnitPrice)
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    </div>
 
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="m-0 font-weight-bold">Informations Client</h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Numéro Client</dt>
+                            <dd class="col-sm-7">@Model.Customers.CustomerID</dd>
+
+                            <dt class="col-sm-5">Entreprise</dt>
+                            <dd class="col-sm-7">@Model.Customers.CompanyName</dd>
+
+                            <dt class="col-sm-5">Contact</dt>
+                            <dd class="col-sm-7">@Model.Customers.ContactName</dd>
+
+                            <dt class="col-sm-5">Téléphone</dt>
+                            <dd class="col-sm-7">@Model.Customers.Phone</dd>
+
+                            <dt class="col-sm-5">Adresse</dt>
+                            <dd class="col-sm-7">@Model.Customers.Address</dd>
+
+                            <dt class="col-sm-5">Ville</dt>
+                            <dd class="col-sm-7">
+                                @Model.Customers.PostalCode @Model.Customers.City
+                            </dd>
+
+                            <dt class="col-sm-5">Pays</dt>
+                            <dd class="col-sm-7">@Model.Customers.Country</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="m-0 font-weight-bold">Informations Commande</h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Date Commande</dt>
+                            <dd class="col-sm-7">@Model.OrderDate?.ToString("dd/MM/yyyy")</dd>
+
+                            <dt class="col-sm-5">Date Requise</dt>
+                            <dd class="col-sm-7">@Model.RequiredDate?.ToString("dd/MM/yyyy")</dd>
+
+                            <dt class="col-sm-5">Date Expédition</dt>
+                            <dd class="col-sm-7">@Model.ShippedDate?.ToString("dd/MM/yyyy")</dd>
+
+                            @* <dt class="col-sm-5">Transporteur</dt> *@
+                            @* <dd class="col-sm-7">@(Model.Shippers?.CompanyName ?? "Non spécifié")</dd> *@
+
+                            <dt class="col-sm-5">Frais de Port</dt>
+                            <dd class="col-sm-7">@Model.Freight?.ToString("C")</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="m-0 font-weight-bold">Adresse de Livraison</h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Destinataire</dt>
+                            <dd class="col-sm-7">@Model.ShipName</dd>
+
+                            <dt class="col-sm-5">Adresse</dt>
+                            <dd class="col-sm-7">@Model.ShipAddress</dd>
+
+                            <dt class="col-sm-5">Ville</dt>
+                            <dd class="col-sm-7">
+                                @Model.ShipPostalCode @Model.ShipCity
+                                @if (!string.IsNullOrEmpty(Model.ShipRegion))
+                                {
+                                    <text>, @Model.ShipRegion</text>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">Pays</dt>
+                            <dd class="col-sm-7">@Model.ShipCountry</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light">
+                <h6 class="m-0 font-weight-bold">Produits Commandés</h6>
+                <span class="badge badge-primary badge-pill">@Model.Order_Details.Count articles</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Produit</th>
+                                <th class="text-right">Quantité</th>
+                                <th class="text-right">Prix Unitaire</th>
+                                <th class="text-right">Remise</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Order_Details)
+                            {
+                                <tr>
+                                    <td>@item.Products.ProductName</td>
+                                    <td class="text-right">@item.Quantity</td>
+                                    <td class="text-right">@item.UnitPrice.ToString("C")</td>
+                                    <td class="text-right">@((item.Discount * 100).ToString("N1"))%</td>
+                                    <td class="text-right font-weight-bold">
+                                        @((item.UnitPrice * item.Quantity * (1m - (decimal)item.Discount)).ToString("C"))
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="font-weight-bold">
+                            <tr>
+                                <td colspan="4">Total HT</td>
+                                <td class="text-right">
+                                    @Model.Order_Details.Sum(od => od.UnitPrice * od.Quantity * (1m - (decimal)od.Discount)).ToString("C"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">Frais de Port</td>
+                                <td class="text-right">@Model.Freight?.ToString("C")</td>
+                            </tr>
+                            <tr class="table-active">
+                                <td colspan="4">Total TTC</td>
+                                <td class="text-right">
+                                    @((Model.Order_Details.Sum(od => od.UnitPrice * od.Quantity * (1m - (decimal)od.Discount)) + (Model.Freight ?? 0)).ToString("C"))
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderID">Modifier</a> |
-    <a asp-action="Index">Retour a la liste</a>
-</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+
+        .card-header {
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .table th {
+            white-space: nowrap;
+        }
+
+        .badge-pill {
+            padding: 0.5em 1em;
+        }
+
+        dl.row dt {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        dl.row dd {
+            font-weight: 600;
+        }
+    </style>
+}

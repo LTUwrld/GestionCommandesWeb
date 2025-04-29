@@ -4,13 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using GestionCommandesWeb.Data;
 using GestionCommandesWeb.Models;
 using GestionCommandesWeb.Shared;
-using System.Dynamic;
-using static NuGet.Packaging.PackagingConstants;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using System.Linq;
 using NuGet.Protocol;
-using Microsoft.AspNetCore.Http;
+
 
 namespace GestionCommandesWeb.Controllers
 {
@@ -48,7 +45,10 @@ namespace GestionCommandesWeb.Controllers
             }
 
             int pageSize = 15;
-            return View(await PaginatedList<Orders>.CreateAsync(gestionCommandesWebContext.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            HttpContext.Session.Remove("persistOrdersViewModel");
+
+            return View(await PaginatedList<Orders>.CreateAsync(gestionCommandesWebContext.OrderByDescending(o => o.OrderDate).AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Orders/Details/5
@@ -70,37 +70,31 @@ namespace GestionCommandesWeb.Controllers
                 return NotFound();
             }
 
+            HttpContext.Session.Remove("persistOrdersViewModel");
+
             return View(orders);
         }
 
         // GET: Orders/Create
         public IActionResult Create()
         {
-            PersistOrdersViewModel? data = null;
-
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             if (persistOrdersViewModel.Update_Order_Detail != null &&
                 persistOrdersViewModel.Update_Order_Detail.ProductID != null)
             {
                 persistOrdersViewModel.Order_Detail = persistOrdersViewModel.Update_Order_Detail;
-
             }
 
-            ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "ContactName");
+            ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "CustomerID");
             ViewData["ProductID"] = new SelectList(_context.Set<Products>(), "ProductID", "ProductName");
 
             if (persistOrdersViewModel.Orders.CustomerID != null)
             {
-                ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "ContactName", persistOrdersViewModel.Orders.CustomerID);
+                ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "CustomerID", persistOrdersViewModel.Orders.CustomerID);
             }
 
             HttpContext.Session.SetString("orderDetailReturnView", nameof(Create));
@@ -115,16 +109,9 @@ namespace GestionCommandesWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PersistOrdersViewModel model)
         {
-            PersistOrdersViewModel? data = null;
-
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             foreach (var item in persistOrdersViewModel.Orders.Order_Details)
@@ -139,8 +126,10 @@ namespace GestionCommandesWeb.Controllers
                 return RedirectToAction(HttpContext.Session.GetString("orderDetailReturnView"));
             }
 
+            model.Orders.Order_Details = persistOrdersViewModel.Orders.Order_Details;
 
-            _context.Add(persistOrdersViewModel.Orders);
+            _context.Add(model.Orders);
+
             await _context.SaveChangesAsync();
 
             HttpContext.Session.Remove("persistOrdersViewModel");
@@ -152,16 +141,10 @@ namespace GestionCommandesWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateOrderDetail(PersistOrdersViewModel model)
         {
-            PersistOrdersViewModel? data = null;
 
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             var potentialOrder_Details = persistOrdersViewModel.Orders.Order_Details.FirstOrDefault(el => el.ProductID == model.Order_Detail.ProductID);
@@ -187,11 +170,6 @@ namespace GestionCommandesWeb.Controllers
             persistOrdersViewModel.Order_Detail = new Order_Details();
             persistOrdersViewModel.Update_Order_Detail = new Order_Details();
 
-            if (model.Orders.CustomerID != null)
-            {
-                persistOrdersViewModel.Orders.CustomerID = model.Orders.CustomerID; 
-            }
-
             HttpContext.Session.SetString("persistOrdersViewModel", JsonConvert.SerializeObject(persistOrdersViewModel));
 
             object? passedId = persistOrdersViewModel.Orders.OrderID != 0 ? new { id = persistOrdersViewModel.Orders.OrderID } : null;
@@ -201,18 +179,10 @@ namespace GestionCommandesWeb.Controllers
 
         public IActionResult EditOrderDetail(int? id)
         {
-            PersistOrdersViewModel? data = null;
-
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
-            }
-
 
             Order_Details? order_Details = persistOrdersViewModel.Orders.Order_Details.FirstOrDefault(el => el.ProductID == id);
 
@@ -222,23 +192,15 @@ namespace GestionCommandesWeb.Controllers
 
             object? passedId = persistOrdersViewModel.Orders.OrderID != 0 ? new {id = persistOrdersViewModel.Orders.OrderID} : null;
 
-            Debug.Print("passedId " + passedId.ToJson());
-
             return RedirectToAction(HttpContext.Session.GetString("orderDetailReturnView"), passedId);
         }
 
         public IActionResult DeleteOrderDetail(int? id)
         {
-            PersistOrdersViewModel? data = null;
 
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             Order_Details? order_Details = persistOrdersViewModel.Orders.Order_Details.FirstOrDefault(el => el.ProductID == id);
@@ -260,16 +222,9 @@ namespace GestionCommandesWeb.Controllers
                 return NotFound();
             }
 
-            PersistOrdersViewModel? data = null;
-
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             if (persistOrdersViewModel.Orders.OrderID == 0)
@@ -284,13 +239,8 @@ namespace GestionCommandesWeb.Controllers
                     return NotFound();
                 }
 
-                persistOrdersViewModel.Orders = new Orders
-                {
-                    OrderID = orders.OrderID,
-                    OrderDate = orders.OrderDate,
-                    Order_Details = orders.Order_Details,
-                    CustomerID = orders.Customers.CustomerID
-                };
+                persistOrdersViewModel.Orders = orders;
+
                 var settings = new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -320,16 +270,9 @@ namespace GestionCommandesWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PersistOrdersViewModel model)
         {
-            PersistOrdersViewModel? data = null;
-
             if (HttpContext.Session.GetString("persistOrdersViewModel") != null)
             {
-                data = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"));
-            }
-
-            if (data != null)
-            {
-                persistOrdersViewModel = data;
+                persistOrdersViewModel = JsonConvert.DeserializeObject<PersistOrdersViewModel>(HttpContext.Session.GetString("persistOrdersViewModel"))!;
             }
 
             if (id != persistOrdersViewModel.Orders.OrderID)
@@ -348,9 +291,11 @@ namespace GestionCommandesWeb.Controllers
             {
                 return RedirectToAction(HttpContext.Session.GetString("orderDetailReturnView"));
             }
-
-
-            _context.Update(persistOrdersViewModel.Orders);
+            
+            model.Orders.Order_Details = persistOrdersViewModel.Orders.Order_Details;
+            
+            _context.Update(model.Orders);
+            
             await _context.SaveChangesAsync();
 
             HttpContext.Session.Remove("persistOrdersViewModel");
