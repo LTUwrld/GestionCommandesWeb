@@ -18,6 +18,8 @@ namespace GestionCommandesWeb.Data
         public DbSet<GestionCommandesWeb.Models.Customers> Customers { get; set; } = default!;
         public DbSet<GestionCommandesWeb.Models.Order_Details> Order_Details { get; set; } = default!;
         public DbSet<GestionCommandesWeb.Models.Products> Products { get; set; } = default!;
+        public DbSet<GestionCommandesWeb.Models.Shippers> Shippers { get; set; } = default!;
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -38,6 +40,11 @@ namespace GestionCommandesWeb.Data
             .HasOne(o => o.Customers)
             .WithMany(c => c.Orders)
             .HasForeignKey(o => o.CustomerID);
+
+            builder.Entity<Orders>()
+            .HasOne(o => o.Shippers)
+            .WithMany(s => s.Orders)
+            .HasForeignKey(o => o.ShipVia);
 
             base.OnModelCreating(builder);
         }

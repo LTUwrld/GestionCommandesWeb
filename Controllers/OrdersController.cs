@@ -61,6 +61,7 @@ namespace GestionCommandesWeb.Controllers
 
             Orders? orders = await _context.Orders
                 .Include(o => o.Customers)
+                .Include(o => o.Shippers)
                 .Include(o => o.Order_Details)
                 .ThenInclude(od => od.Products)
                 .FirstOrDefaultAsync(m => m.OrderID == id);
@@ -88,13 +89,19 @@ namespace GestionCommandesWeb.Controllers
             {
                 persistOrdersViewModel.Order_Detail = persistOrdersViewModel.Update_Order_Detail;
             }
-
+            Debug.Print("Shippers ======================= " + _context.Shippers.ToJson());
             ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "CustomerID");
+            ViewData["ShipVia"] = new SelectList(_context.Set<Shippers>(), "ShipperID", "CompanyName");
             ViewData["ProductID"] = new SelectList(_context.Set<Products>(), "ProductID", "ProductName");
 
             if (persistOrdersViewModel.Orders.CustomerID != null)
             {
                 ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "CustomerID", persistOrdersViewModel.Orders.CustomerID);
+            }
+
+            if (persistOrdersViewModel.Orders.ShipVia != null && persistOrdersViewModel.Orders.ShipVia > 0)
+            {
+                ViewData["ShipVia"] = new SelectList(_context.Set<Shippers>(), "ShipperID", "CompanyName", persistOrdersViewModel.Orders.ShipVia);
             }
 
             HttpContext.Session.SetString("orderDetailReturnView", nameof(Create));
@@ -231,6 +238,7 @@ namespace GestionCommandesWeb.Controllers
             {
                 Orders? orders = await _context.Orders
                                 .Include(o => o.Customers)
+                                .Include(o => o.Shippers)
                                 .Include(o => o.Order_Details)
                                 .ThenInclude(od => od.Products)
                                 .FirstOrDefaultAsync(m => m.OrderID == id);
@@ -256,6 +264,7 @@ namespace GestionCommandesWeb.Controllers
             }
 
             ViewData["CustomerID"] = new SelectList(_context.Set<Customers>(), "CustomerID", "CustomerID", persistOrdersViewModel.Orders.CustomerID);
+            ViewData["ShipVia"] = new SelectList(_context.Set<Shippers>(), "ShipperID", "CompanyName", persistOrdersViewModel.Orders.ShipVia);
             ViewData["ProductID"] = new SelectList(_context.Set<Products>(), "ProductID", "ProductName");
 
             HttpContext.Session.SetString("orderDetailReturnView", nameof(Edit));
@@ -314,6 +323,7 @@ namespace GestionCommandesWeb.Controllers
 
             var orders = await _context.Orders
                 .Include(o => o.Customers)
+                .Include(o => o.Shippers)
                 .Include(o => o.Order_Details)
                 .ThenInclude(od => od.Products)
                 .FirstOrDefaultAsync(m => m.OrderID == id);

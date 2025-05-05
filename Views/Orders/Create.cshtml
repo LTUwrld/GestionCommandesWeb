@@ -49,7 +49,7 @@
                             <h5 class="border-bottom pb-2 mb-3">Informations Expédition</h5>
                             <div class="form-group">
                                 <label asp-for="Orders.ShipVia" class="control-label">Transporteur</label>
-                                <select asp-for="Orders.ShipVia" class="form-control" asp-items="ViewBag.Shippers">
+                                <select asp-for="Orders.ShipVia" class="form-control" asp-items="ViewBag.ShipVia">
                                     <option value="">-- Sélectionner un transporteur --</option>
                                 </select>
                                 <span asp-validation-for="Orders.ShipVia" class="text-danger"></span>

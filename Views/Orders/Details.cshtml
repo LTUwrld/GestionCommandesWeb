@@ -72,8 +72,8 @@
                             <dt class="col-sm-5">Date Expédition</dt>
                             <dd class="col-sm-7">@Model.ShippedDate?.ToString("dd/MM/yyyy")</dd>
 
-                            @* <dt class="col-sm-5">Transporteur</dt> *@
-                            @* <dd class="col-sm-7">@(Model.Shippers?.CompanyName ?? "Non spécifié")</dd> *@
+                            <dt class="col-sm-5">Transporteur</dt>
+                            <dd class="col-sm-7">@(Model.Shippers?.CompanyName ?? "Non spécifié")</dd>
 
                             <dt class="col-sm-5">Frais de Port</dt>
                             <dd class="col-sm-7">@Model.Freight?.ToString("C")</dd>
